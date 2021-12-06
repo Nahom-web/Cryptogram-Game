@@ -111,3 +111,12 @@ class SecondLetterNotALetterException(BaseException):
 
     def __str__(self):
         return f'{self.message}'
+
+
+class CantReceiveHintException(BaseException):
+    def __init__(self):
+        self.message = "Sorry, you can only receive one hint."
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f'{self.message}'

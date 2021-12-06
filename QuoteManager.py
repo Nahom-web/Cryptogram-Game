@@ -22,12 +22,16 @@ class QuoteManager(HTMLParser):
                     self.class_attribute_name = value
                 else:
                     self.class_attribute_name = ""
+        elif tag == "br":
+            self.class_attribute_name = "br"
         else:
             self.class_attribute_name = ""
 
     def handle_data(self, data):
         if self.class_attribute_name == "wp_quotepage_quote":
-            self.stripped_quotes.append("".join([data[w] for w in range(len(data)) if not data[w].isdigit()])[2:])
+            self.stripped_quotes.append("".join([data[w] for w in range(len(data))]))
+        if self.class_attribute_name == "br":
+            self.stripped_quotes[-1] += f' {data}'
 
     def parse_url(self):
         with req.urlopen(QuoteManager.QUOTE_URL) as f:
@@ -37,8 +41,7 @@ class QuoteManager(HTMLParser):
 
     def create_quotes_dictionary(self):
         for index in range(len(self.stripped_quotes)):
-            quote = Quote.Quote(self.stripped_quotes[index])
-            quote.encode_quote()
+            quote = Quote.Quote(self.stripped_quotes[index][3:].strip())
             self.quotes[index] = quote
 
     def random_quote(self):
