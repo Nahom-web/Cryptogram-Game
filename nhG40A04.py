@@ -17,7 +17,12 @@ def display_quote(quote):
 
 def display_guessed_quote(quote):
     for letter, value in quote.items():
-        print(Fore.GREEN + f'{value.letter}', end=' ' + Fore.RESET)
+        if value.type == "hint":
+            print(Fore.MAGENTA + f'{value.letter}', end=' ' + Fore.RESET)
+        elif value.type == "mistake":
+            print(Fore.RED + f'{value.letter}', end=' ' + Fore.RESET)
+        elif value.type == "guess":
+            print(Fore.GREEN + f'{value.letter}', end=' ' + Fore.RESET)
     print()
 
 
