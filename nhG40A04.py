@@ -11,13 +11,13 @@ def print_error_message(e):
 
 def display_quote(quote):
     for letter, value in quote.items():
-        print(Fore.BLUE + f'{value}', end=' ' + Fore.RESET)
+        print(Fore.BLUE + f'{value.letter}', end=' ' + Fore.RESET)
     print()
 
 
 def display_guessed_quote(quote):
     for letter, value in quote.items():
-        print(Fore.GREEN + f'{value}', end=' ' + Fore.RESET)
+        print(Fore.GREEN + f'{value.letter}', end=' ' + Fore.RESET)
     print()
 
 
@@ -27,7 +27,7 @@ def print_alphabet(alphabet):
         print(f'{letter}', end=' ')
     print()
     for letter, value in alphabet.items():
-        print(f'{value}', end=' ')
+        print(f'{value.letter}', end=' ')
     print()
     print()
 
@@ -124,7 +124,6 @@ def start_game(_quote_chosen):
 
 if __name__ == "__main__":
     print("Welcome to the cryptogram game")
-
     quote_manager = QuoteManager.QuoteManager()
     quote_manager.parse_url()
     quote_manager.create_quotes_dictionary()

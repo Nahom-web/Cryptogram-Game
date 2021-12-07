@@ -1,6 +1,7 @@
 import Exceptions
 import string
 import random
+import Letter
 
 
 class CryptogramGameLogic:
@@ -13,17 +14,16 @@ class CryptogramGameLogic:
         self.guessed_quote_letters = {}
         self.guessed_letters = list()
         self.decoded_quote_letters = {}
+        self.alphabet = {}
+        self.number_of_hints = 0
         self.uppercase_ascii_letters = string.ascii_uppercase
         ascii_list = list(self.uppercase_ascii_letters)
         random.shuffle(ascii_list)
         self.mixed_ascii = ''.join(ascii_list)
-        self.alphabet = {}
-        self.number_of_hints = 0
-        self.mistakes = dict()
 
     def create_alphabet_dictionary(self):
         for letter in range(len(self.uppercase_ascii_letters)):
-            self.alphabet[self.uppercase_ascii_letters[letter]] = "_"
+            self.alphabet[self.uppercase_ascii_letters[letter]] = Letter.Letter("_")
 
     def encode_letter(self, letter):
         return self.mixed_ascii[self.uppercase_ascii_letters.index(letter.upper())]
@@ -41,11 +41,11 @@ class CryptogramGameLogic:
 
     def initialize_quote_dictionaries(self):
         for q in range(len(self.encoded_quote)):
-            self.encoded_quote_letters[q] = self.encoded_quote[q]
+            self.encoded_quote_letters[q] = Letter.Letter(self.encoded_quote[q])
             if self.encoded_quote[q].isalpha():
-                self.guessed_quote_letters[q] = "_"
+                self.guessed_quote_letters[q] = Letter.Letter("_")
             else:
-                self.guessed_quote_letters[q] = self.encoded_quote[q]
+                self.guessed_quote_letters[q] = Letter.Letter(self.encoded_quote[q])
 
     def initialize_decoded_dictionary(self):
         for quote in range(len(self.quote_chosen)):
@@ -60,7 +60,7 @@ class CryptogramGameLogic:
 
     def check_guessed_quote(self):
         for i, v in self.guessed_quote_letters.items():
-            if v == "_":
+            if v.letter == "_":
                 return False
         return True
 
@@ -88,17 +88,17 @@ class CryptogramGameLogic:
             if second_letter != "_":
                 self.check_second_letter(second_letter)
 
-            self.alphabet[first_letter] = second_letter
+            self.alphabet[first_letter].letter = second_letter
             self.guessed_letters.append(second_letter)
             self.update_quote(first_letter, second_letter)
 
     def update_quote(self, encoded_letter, letter):
         indexes = list()
         for index, value in self.encoded_quote_letters.items():
-            if value == encoded_letter:
+            if value.letter == encoded_letter:
                 indexes.append(index)
         for i in indexes:
-            self.guessed_quote_letters[i] = letter
+            self.guessed_quote_letters[i].letter = letter
 
     def can_receive_hint(self):
         return self.number_of_hints == 0
@@ -112,7 +112,7 @@ class CryptogramGameLogic:
                     given_letter = letter.strip()
                     continue
         self.update_quote(self.encode_letter(given_letter), given_letter)
-        self.alphabet[self.encode_letter(given_letter)] = given_letter
+        self.alphabet[self.encode_letter(given_letter)].letter = given_letter
 
     def update_alphabet(self, letter):
         self.alphabet[letter] = "_"
@@ -122,11 +122,11 @@ class CryptogramGameLogic:
             self.guessed_letters.remove(letter)
 
     def remove_guessed_letter(self, index):
-        self.guessed_quote_letters[index] = "_"
+        self.guessed_quote_letters[index].letter = "_"
 
     def find_all_mistakes(self):
         for index in range(len(self.guessed_quote_letters)):
-            letter_to_remove = self.guessed_quote_letters[index]
+            letter_to_remove = self.guessed_quote_letters[index].letter
             if letter_to_remove.isalpha():
                 if letter_to_remove != self.decoded_quote_letters[index]:
                     self.update_alphabet(letter_to_remove)
@@ -137,4 +137,7 @@ class CryptogramGameLogic:
         return self.guessed_quote_letters == self.decoded_quote_letters
 
     def is_game_over(self):
-        return '_' not in self.guessed_quote_letters.values()
+        letter_in_guessed_quote = list()
+        for index, letter in self.guessed_quote_letters.items():
+            letter_in_guessed_quote.append(letter.letter)
+        return '_' not in letter_in_guessed_quote
