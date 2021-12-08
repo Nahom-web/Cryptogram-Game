@@ -76,6 +76,16 @@ class CryptogramGameLogic:
         if not letter.isalpha():
             raise Exceptions.SecondLetterNotALetterException()
 
+    def check_if_letter_has_been_guessed(self, letter):
+        guessed_letters = self.convert_letter_objects_to_list(self.guessed_quote_letters)
+        if letter in guessed_letters:
+            raise Exceptions.LetterHasAlreadyBeenGuessedException()
+
+    def check_if_letter_is_in_quote(self, letter):
+        guessed_letters = self.convert_letter_objects_to_list(self.guessed_quote_letters)
+        if letter not in guessed_letters:
+            raise Exceptions.EncodedLetterIsNotInQuoteException()
+
     def determine_guess(self, guess):
         if self.check_guess_length(guess):
             first_letter = guess[:1].upper()
@@ -88,6 +98,8 @@ class CryptogramGameLogic:
             if second_letter != "_":
                 self.check_second_letter(second_letter)
 
+            self.check_if_letter_is_in_quote(first_letter)
+            self.check_if_letter_has_been_guessed(second_letter)
             self.alphabet[first_letter].letter = second_letter
             self.guessed_letters.append(second_letter)
             self.update_quote(first_letter, second_letter)
@@ -147,7 +159,4 @@ class CryptogramGameLogic:
         return self.convert_letter_objects_to_list(self.guessed_quote_letters) == self.convert_letter_objects_to_list(self.decoded_quote_letters)
 
     def is_game_over(self):
-        letter_in_guessed_quote = list()
-        for index, letter in self.guessed_quote_letters.items():
-            letter_in_guessed_quote.append(letter.letter)
         return '_' not in self.convert_letter_objects_to_list(self.guessed_quote_letters)

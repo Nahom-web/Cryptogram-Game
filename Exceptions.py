@@ -120,3 +120,21 @@ class CantReceiveHintException(BaseException):
 
     def __str__(self):
         return f'{self.message}'
+
+
+class LetterHasAlreadyBeenGuessedException(BaseException):
+    def __init__(self):
+        self.message = "Sorry, you already used that letter to convert another encoded letter. Please try-again."
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f'{self.message}'
+
+
+class EncodedLetterIsNotInQuoteException(BaseException):
+    def __init__(self):
+        self.message = "Sorry, the encoded letter is not in the quote. Please try-again."
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f'{self.message}'

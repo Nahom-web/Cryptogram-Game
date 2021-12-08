@@ -121,6 +121,10 @@ def start_game(_quote_chosen):
             print_error_message(e)
         except Exceptions.CantReceiveHintException as e:
             print_error_message(e)
+        except Exceptions.LetterHasAlreadyBeenGuessedException as e:
+            print_error_message(e)
+        except Exceptions.EncodedLetterIsNotInQuoteException as e:
+            print_error_message(e)
     else:
         display_quote(game.encoded_quote_letters)
         display_guessed_quote(game.guessed_quote_letters)
