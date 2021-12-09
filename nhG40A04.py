@@ -1,3 +1,8 @@
+# by Nahom Haile
+# Advanced Topics in Computer Science I
+# nhG40A04.py
+# The CLI for the cryptogram game
+
 import QuoteManager
 import CryptogramGameLogic
 import Exceptions

@@ -1,4 +1,7 @@
-
+# by Nahom Haile
+# Advanced Topics in Computer Science I
+# Quote.py
+# Will hold a single quote with it's author, difficulty [easy-hard] and type of quote [wisdom, funny, or intelligent]
 
 class Quote:
 

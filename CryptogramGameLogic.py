@@ -1,3 +1,9 @@
+# by Nahom Haile
+# Advanced Topics in Computer Science I
+# CryptogramGameLogic.py
+# Contains all the cryptogram logic
+
+
 import Exceptions
 import string
 import random

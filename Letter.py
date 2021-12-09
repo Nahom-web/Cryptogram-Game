@@ -1,4 +1,7 @@
-
+# by Nahom Haile
+# Advanced Topics in Computer Science I
+# Letter.py
+# Will hold a single letter with it's type: a hint, mistake or a guess
 
 class Letter:
 
