@@ -11,26 +11,25 @@ class QuoteManager(HTMLParser):
     def __init__(self):
         super().__init__()
         self.reset()
-        self.class_attribute_name = ""
+        self.is_quote_div = False
+        self.break_line_tag = False
         self.stripped_quotes = list()
         self.quotes = {}
 
     def handle_starttag(self, tag, attrs):
+        self.is_quote_div = False
+        self.break_line_tag = False
         if tag == "div":
             for name, value in attrs:
-                if name == "class":
-                    self.class_attribute_name = value
-                else:
-                    self.class_attribute_name = ""
+                if name == "class" and value == "wp_quotepage_quote":
+                    self.is_quote_div = True
         elif tag == "br":
-            self.class_attribute_name = "br"
-        else:
-            self.class_attribute_name = ""
+            self.break_line_tag = True
 
     def handle_data(self, data):
-        if self.class_attribute_name == "wp_quotepage_quote":
-            self.stripped_quotes.append("".join([data[w] for w in range(len(data))]))
-        if self.class_attribute_name == "br":
+        if self.is_quote_div:
+            self.stripped_quotes.append(data)
+        if self.break_line_tag:
             self.stripped_quotes[-1] += f' {data}'
 
     def parse_url(self):
@@ -45,5 +44,6 @@ class QuoteManager(HTMLParser):
             self.quotes[index] = quote
 
     def random_quote(self):
-        randomized_quote = random.choice(list(self.quotes.items()))
-        return randomized_quote[1]
+        # randomized_quote = random.choice(list(self.quotes.items()))
+        # return randomized_quote[1]
+        return self.quotes[0]

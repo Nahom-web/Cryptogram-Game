@@ -2,12 +2,15 @@ import Exceptions
 import string
 import random
 import Letter
+import time
 
 
 class CryptogramGameLogic:
 
     def __init__(self, _quote_chosen):
         self.quote_chosen = _quote_chosen
+        self.start_time = time.time()
+        self.end_time = 0
         self.time_taken = 0
         self.encoded_quote = ""
         self.encoded_quote_letters = {}
@@ -47,7 +50,7 @@ class CryptogramGameLogic:
             else:
                 self.guessed_quote_letters[q] = Letter.Letter(self.encoded_quote[q])
 
-    def initialize_decoded_dictionary(self):
+    def initialize_decoded_dictionary_of_quote_letters(self):
         for quote in range(len(self.quote_chosen)):
             self.decoded_quote_letters[quote] = Letter.Letter(self.quote_chosen[quote].upper())
 
@@ -76,13 +79,8 @@ class CryptogramGameLogic:
         if not letter.isalpha():
             raise Exceptions.SecondLetterNotALetterException()
 
-    def check_if_letter_has_been_guessed(self, letter):
-        guessed_letters = self.convert_letter_objects_to_list(self.guessed_quote_letters)
-        if letter in guessed_letters:
-            raise Exceptions.LetterHasAlreadyBeenGuessedException()
-
     def check_if_letter_is_in_quote(self, letter):
-        guessed_letters = self.convert_letter_objects_to_list(self.guessed_quote_letters)
+        guessed_letters = self.letter_objects_to_list_of_letters(self.encoded_quote_letters)
         if letter not in guessed_letters:
             raise Exceptions.EncodedLetterIsNotInQuoteException()
 
@@ -99,7 +97,6 @@ class CryptogramGameLogic:
                 self.check_second_letter(second_letter)
 
             self.check_if_letter_is_in_quote(first_letter)
-            self.check_if_letter_has_been_guessed(second_letter)
             self.alphabet[first_letter].letter = second_letter
             self.guessed_letters.append(second_letter)
             self.update_quote(first_letter, second_letter)
@@ -136,7 +133,7 @@ class CryptogramGameLogic:
         if letter in self.guessed_letters:
             self.guessed_letters.remove(letter)
 
-    def remove_guessed_letter(self, index):
+    def set_letter_as_mistake(self, index):
         self.guessed_quote_letters[index].type = "mistake"
 
     def find_all_mistakes(self):
@@ -144,19 +141,40 @@ class CryptogramGameLogic:
             letter_to_remove = self.guessed_quote_letters[index].letter
             if letter_to_remove.isalpha():
                 if letter_to_remove != self.decoded_quote_letters[index].letter:
-                    # self.update_alphabet(letter_to_remove)
-                    # self.update_guessed_letters(letter_to_remove)
-                    self.remove_guessed_letter(index)
+                    self.set_letter_as_mistake(index)
 
     @staticmethod
-    def convert_letter_objects_to_list(dictionary_of_letter_objects):
+    def letter_objects_to_list_of_letters(dictionary_of_letter_objects):
         letters = list()
         for index, letter in dictionary_of_letter_objects.items():
             letters.append(letter.letter)
         return letters
 
+    @staticmethod
+    def letter_objects_to_list_of_letter_types(dictionary_of_letter_objects):
+        letters = list()
+        for index, letter in dictionary_of_letter_objects.items():
+            letters.append(letter.type)
+        return letters
+
     def is_win(self):
-        return self.convert_letter_objects_to_list(self.guessed_quote_letters) == self.convert_letter_objects_to_list(self.decoded_quote_letters)
+        return self.letter_objects_to_list_of_letters(self.guessed_quote_letters) == \
+               self.letter_objects_to_list_of_letters(
+            self.decoded_quote_letters)
 
     def is_game_over(self):
-        return '_' not in self.convert_letter_objects_to_list(self.guessed_quote_letters)
+        return '_' not in self.letter_objects_to_list_of_letters(self.guessed_quote_letters) and 'mistake' not \
+               in self.letter_objects_to_list_of_letter_types(self.guessed_quote_letters)
+
+    def calculate_time(self):
+        self.end_time = time.time()
+        total_time = self.end_time - self.start_time
+        ty_res = time.gmtime(total_time)
+        return time.strftime("%M:%S", ty_res)
+
+    def reset_quote(self):
+        for index, letter in self.guessed_quote_letters.items():
+            if letter.letter.isalpha():
+                letter.letter = "_"
+        for index, letter in self.alphabet.items():
+            letter.letter = "_"

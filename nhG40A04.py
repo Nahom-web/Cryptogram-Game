@@ -1,7 +1,7 @@
 import QuoteManager
 import CryptogramGameLogic
 import Exceptions
-from colorama import init, Fore, Back, Style
+from colorama import init, Fore
 init()
 
 
@@ -27,7 +27,7 @@ def display_guessed_quote(quote):
 
 
 def print_alphabet(alphabet):
-    print("Alphabet")
+    print("Letters guessed:")
     for letter, value in alphabet.items():
         print(f'{letter}', end=' ')
     print()
@@ -40,32 +40,36 @@ def print_alphabet(alphabet):
 def display_instructions():
     print('''To convert a encoded letter you simply enter in:
 "Any decoded letter" a space "Letter to replace"
-Example: V A''')
-    print()
-    print()
+Example: V A
+
+To receive a hint enter: ?
+To find all of your mistakes enter: !
+To end the game at any time enter: stop
+''')
 
 
 def check_input(guess_input, game_obj):
     if guess_input == '!':
+        print("Finding all mistakes...")
         game_obj.find_all_mistakes()
     elif guess_input == "?":
         if game_obj.can_receive_hint():
             game_obj.receive_hint()
         else:
             raise Exceptions.CantReceiveHintException()
+    elif guess_input == "stop":
+        print('Thanks for playing!')
+        exit(0)
     elif guess_input == "":
         raise Exceptions.EmptyGuessException()
     else:
         game_obj.determine_guess(guess_input)
 
 
-def get_random_quote():
-    quote_chosen = quote_manager.random_quote()
-    start_game(quote_chosen)
-
-
 def won(game_obj):
-    answer = input("You won! Do you want to play again? (yes/no)")
+    game_obj.calculate_time()
+    print("You won! Do you want to play again? (yes/no)")
+    answer = input(">>>")
     if answer.lower() == 'yes':
         get_random_quote()
     if answer.lower() == 'no':
@@ -74,12 +78,15 @@ def won(game_obj):
 
 
 def lost(game_obj):
-    answer = input('Sorry, you lost. Do you want to play again or find all mistakes? Enter "play again" to '
-                   'play again or "!" to find all mistakes.')
+    game_obj.calculate_time()
+    print('Sorry, you lost. Do you want to play a new game or find all mistakes? Enter "play again" to '
+          'play again or "!" to find all mistakes.')
+    answer = input(">>>")
     if answer.lower() == 'play again':
         get_random_quote()
     if answer == '!':
-        pass
+        game_obj.find_all_mistakes()
+        start_game(game_obj)
 
 
 def game_over(game_obj):
@@ -90,21 +97,31 @@ def game_over(game_obj):
         lost(game_obj)
 
 
-def start_game(_quote_chosen):
+def get_random_quote():
+    quote_chosen = quote_manager.random_quote()
+    set_up_game(quote_chosen)
+
+
+def set_up_game(_quote_chosen):
     game = CryptogramGameLogic.CryptogramGameLogic(_quote_chosen.quote)
     game.encode_quote()
     game.initialize_quote_dictionaries()
     game.initialize_decoded_dictionary()
     game.create_alphabet_dictionary()
     display_instructions()
-    print(_quote_chosen.quote)
-    while not game.is_game_over():
+    # game.reset_quote()
+    start_game(game)
+
+
+def start_game(game_obj):
+    print(game_obj.quote_chosen)
+    while not game_obj.is_game_over():
         try:
-            print_alphabet(game.alphabet)
-            display_quote(game.encoded_quote_letters)
-            display_guessed_quote(game.guessed_quote_letters)
+            print_alphabet(game_obj.alphabet)
+            display_quote(game_obj.encoded_quote_letters)
+            display_guessed_quote(game_obj.guessed_quote_letters)
             guess = input(">>>")
-            check_input(guess, game)
+            check_input(guess, game_obj)
         except ValueError:
             print_error_message("Please enter a valid command")
         except Exceptions.EmptyGuessException as e:
@@ -126,9 +143,9 @@ def start_game(_quote_chosen):
         except Exceptions.EncodedLetterIsNotInQuoteException as e:
             print_error_message(e)
     else:
-        display_quote(game.encoded_quote_letters)
-        display_guessed_quote(game.guessed_quote_letters)
-        game_over(game)
+        display_quote(game_obj.encoded_quote_letters)
+        display_guessed_quote(game_obj.guessed_quote_letters)
+        game_over(game_obj)
 
 
 if __name__ == "__main__":
