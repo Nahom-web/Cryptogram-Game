@@ -9,7 +9,7 @@ import string
 import random
 import Letter
 import time
-from colorama import init, Fore
+from colorama import Fore
 
 
 class CryptogramGameLogic:
@@ -122,7 +122,7 @@ class CryptogramGameLogic:
         if self.number_of_hints == 0:
             self._receive_hint()
         else:
-            raise Exceptions.SecondLetterNotALetterException()
+            raise Exceptions.CantReceiveHintException()
 
     def _receive_hint(self):
         self.number_of_hints += 1
