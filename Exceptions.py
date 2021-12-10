@@ -1,7 +1,7 @@
 # by Nahom Haile
 # Advanced Topics in Computer Science I
 # Exceptions.py
-# Contains all the exceptions used within the program
+# This file includes all of the exceptions used for the program
 
 
 class NoSpaceInBetweenConversionException(BaseException):

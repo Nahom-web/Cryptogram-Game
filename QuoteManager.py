@@ -16,31 +16,29 @@ class QuoteManager(HTMLParser):
     def __init__(self):
         super().__init__()
         self.reset()
-        self.is_quote = ""
-        # self.break_line_tag = False
+        self.is_quote = False
+        self.is_br = False
+        self.check_quote_end_tag = False
         self.stripped_quotes = list()
         self.quotes = {}
 
     def handle_starttag(self, tag, attrs):
-        self.is_quote = ""
-        # self.break_line_tag = False
+        self.is_quote = False
         if tag == "div":
             for name, value in attrs:
                 if name == "class" and value == "wp_quotepage_quote":
                     self.is_quote = True
-        # elif tag == "br":
-        #     self.break_line_tag = True
+                    self.check_quote_end_tag = True
+
+    def handle_endtag(self, tag):
+        if self.check_quote_end_tag:
+            self.check_quote_end_tag = False
 
     def handle_data(self, data):
         if self.is_quote:
             self.stripped_quotes.append(data)
-        if self.is_end_quote_div:
+        elif self.check_quote_end_tag:
             self.stripped_quotes[-1] += f' {data}'
-        # if self.break_line_tag:
-        #     self.stripped_quotes[-1] += f' {data}'
-
-    def handle_endtag(self, tag):
-        self.is_quote = self.is_end_quote_div
 
     def parse_url(self):
         with req.urlopen(QuoteManager.QUOTE_URL) as f:
@@ -50,10 +48,13 @@ class QuoteManager(HTMLParser):
 
     def create_quotes_dictionary(self):
         for index in range(len(self.stripped_quotes)):
-            quote = Quote.Quote(self.stripped_quotes[index][3:].strip())
+            quote = Quote.Quote(self.remove_number_from_quote(self.stripped_quotes[index]))
             self.quotes[index] = quote
 
+    def remove_number_from_quote(self, quote):
+        start_point = [q for q in range(len(quote)) if quote[q].isalpha()][0]
+        return quote[start_point:]
+
     def random_quote(self):
-        # randomized_quote = random.choice(list(self.quotes.items()))
-        # return randomized_quote[1]
-        return self.quotes[0]
+        randomized_quote = random.choice(list(self.quotes.items()))
+        return randomized_quote[1]

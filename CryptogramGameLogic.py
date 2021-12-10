@@ -1,7 +1,7 @@
 # by Nahom Haile
 # Advanced Topics in Computer Science I
 # CryptogramGameLogic.py
-# Contains all the cryptogram logic
+# The file includes the CryptogramGameLogic class which contains all the cryptogram logic
 
 
 import Exceptions
@@ -126,7 +126,7 @@ class CryptogramGameLogic:
         given_letter = ""
         for index, letter in self.decoded_quote_letters.items():
             if letter.letter.isalpha():
-                if letter not in self.guessed_letters:
+                if letter.letter not in self.guessed_letters:
                     given_letter = letter.letter.strip()
                     continue
         self.update_quote(self.encode_letter(given_letter), given_letter, hint=True)
@@ -177,10 +177,3 @@ class CryptogramGameLogic:
         total_time = self.end_time - self.start_time
         ty_res = time.gmtime(total_time)
         return time.strftime("%M:%S", ty_res)
-
-    def reset_quote(self):
-        for index, letter in self.guessed_quote_letters.items():
-            if letter.letter.isalpha():
-                letter.letter = "_"
-        for index, letter in self.alphabet.items():
-            letter.letter = "_"

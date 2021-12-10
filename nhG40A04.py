@@ -1,7 +1,7 @@
 # by Nahom Haile
 # Advanced Topics in Computer Science I
 # nhG40A04.py
-# The CLI for the cryptogram game
+# This file includes the CLI for the cryptogram game
 
 import QuoteManager
 import CryptogramGameLogic
@@ -45,11 +45,12 @@ def print_alphabet(alphabet):
 def display_instructions():
     print('''To convert a encoded letter you simply enter in:
 "Any decoded letter" a space "Letter to replace"
-Example: V A
+Example "V A"
 
-To receive a hint enter: ?
-To find all of your mistakes enter: !
+To receive a hint enter: ? (shown in purple)
+To find all of your mistakes enter: ! (show in red)
 To end the game at any time enter: stop
+To set any encoded letter back to an underscore, simply set it back to "_" following the input format.
 ''')
 
 
@@ -73,6 +74,7 @@ def check_input(guess_input, game_obj):
 
 def won(game_obj):
     game_obj.calculate_time()
+    print(f'It took you: {game_obj.calculate_time()} minutes')
     print("You won! Do you want to play again? (yes/no)")
     answer = input(">>>")
     if answer.lower() == 'yes':
@@ -83,9 +85,8 @@ def won(game_obj):
 
 
 def lost(game_obj):
-    game_obj.calculate_time()
-    print('Sorry, you lost. Do you want to play a new game or find all mistakes? Enter "play again" to '
-          'play again or "!" to find all mistakes.')
+    print('Sorry, you lost. Do you want to play a new game or find all the mistakes? Enter "play again" or "!" to '
+          'find all mistakes.')
     answer = input(">>>")
     if answer.lower() == 'play again':
         get_random_quote()
@@ -111,10 +112,9 @@ def set_up_game(_quote_chosen):
     game = CryptogramGameLogic.CryptogramGameLogic(_quote_chosen.quote)
     game.encode_quote()
     game.initialize_quote_dictionaries()
-    game.initialize_decoded_dictionary()
+    game.initialize_decoded_dictionary_of_quote_letters()
     game.create_alphabet_dictionary()
     display_instructions()
-    # game.reset_quote()
     start_game(game)
 
 
