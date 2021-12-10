@@ -14,41 +14,13 @@ def print_error_message(e):
     print(Fore.RED + f'{e} \n' + Fore.RESET)
 
 
-def display_quote(quote):
-    for letter, value in quote.items():
-        print(Fore.BLUE + f'{value.letter}', end=' ' + Fore.RESET)
-    print()
-
-
-def display_guessed_quote(quote):
-    for letter, value in quote.items():
-        if value.type == "hint":
-            print(Fore.MAGENTA + f'{value.letter}', end=' ' + Fore.RESET)
-        elif value.type == "mistake":
-            print(Fore.RED + f'{value.letter}', end=' ' + Fore.RESET)
-        elif value.type == "guess":
-            print(Fore.GREEN + f'{value.letter}', end=' ' + Fore.RESET)
-    print()
-
-
-def print_alphabet(alphabet):
-    print("Letters guessed:")
-    for letter, value in alphabet.items():
-        print(f'{letter}', end=' ')
-    print()
-    for letter, value in alphabet.items():
-        print(f'{value.letter}', end=' ')
-    print()
-    print()
-
-
 def display_instructions():
     print('''To convert a encoded letter you simply enter in:
 "Any decoded letter" a space "Letter to replace"
 Example "V A"
 
 To receive a hint enter: ? (shown in purple)
-To find all of your mistakes enter: ! (show in red)
+To find all of your mistakes enter: ! (shown in red)
 To end the game at any time enter: stop
 To set any encoded letter back to an underscore, simply set it back to "_" following the input format.
 ''')
@@ -94,10 +66,7 @@ def lost(game_obj):
 
 def game_over(game_obj):
     print('game over')
-    if game_obj.is_win():
-        won(game_obj)
-    else:
-        lost(game_obj)
+    won(game_obj) if game_obj.__eq__(game_obj.decoded_quote_letters) else lost(game_obj)
 
 
 def get_random_quote():
@@ -117,12 +86,9 @@ def set_up_game(_quote_chosen):
 
 def start_game(game_obj):
     print(game_obj.quote_chosen)
-    print(game_obj.__repr__())
     while not game_obj.is_game_over():
         try:
-            print_alphabet(game_obj.alphabet)
-            display_quote(game_obj.encoded_quote_letters)
-            display_guessed_quote(game_obj.guessed_quote_letters)
+            print(game_obj.__str__())
             guess = input(">>>")
             check_input(guess, game_obj)
         except ValueError:
@@ -145,8 +111,7 @@ def start_game(game_obj):
             print_error_message(e)
     else:
         game_obj.find_all_mistakes()
-        display_quote(game_obj.encoded_quote_letters)
-        display_guessed_quote(game_obj.guessed_quote_letters)
+        print(game_obj.__repr__())
         game_over(game_obj)
 
 

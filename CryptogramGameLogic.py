@@ -9,6 +9,7 @@ import string
 import random
 import Letter
 import time
+from colorama import init, Fore
 
 
 class CryptogramGameLogic:
@@ -187,3 +188,45 @@ class CryptogramGameLogic:
         total_time = self.end_time - self.start_time
         ty_res = time.gmtime(total_time)
         return time.strftime("%M:%S", ty_res)
+
+    def display_alphabet(self, quote):
+        output = ""
+        for key, value in quote.items():
+            output += f'{key} '
+        output += "\n"
+        for key, value in quote.items():
+            output += f'{value.letter} '
+        return output
+
+    def display_quote(self, quote):
+        output = ""
+        for key, value in quote.items():
+            if value.type == "hint":
+                output += Fore.MAGENTA + f'{value.letter} ' + Fore.RESET
+            elif value.type == "mistake":
+                output += Fore.RED + f'{value.letter} ' + Fore.RESET
+            elif value.type == "guess":
+                output += Fore.GREEN + f'{value.letter} ' + Fore.RESET
+        return output
+
+    def display_encoded_quote(self, quote):
+        output = ""
+        for key, value in quote.items():
+            output += Fore.BLUE + f'{value.letter} ' + Fore.RESET
+        return output
+
+    def __str__(self):
+        output = ""
+        output += self.display_alphabet(self.alphabet) + "\n\n"
+        output += self.__repr__()
+        return output
+
+    def __repr__(self):
+        output = ""
+        output += self.display_encoded_quote(self.encoded_quote_letters) + "\n"
+        output += self.display_quote(self.guessed_quote_letters) + "\n"
+        return output
+
+    def __eq__(self, other):
+        return self.letter_objects_to_list_of_letters(self.guessed_quote_letters) == \
+               self.letter_objects_to_list_of_letters(other)
