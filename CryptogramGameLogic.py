@@ -17,7 +17,6 @@ class CryptogramGameLogic:
         self.quote_chosen = _quote_chosen
         self.start_time = time.time()
         self.end_time = 0
-        self.time_taken = 0
         self.encoded_quote = ""
         self.encoded_quote_letters = {}
         self.guessed_quote_letters = {}
@@ -34,18 +33,18 @@ class CryptogramGameLogic:
         for letter in range(len(self.uppercase_ascii_letters)):
             self.alphabet[self.uppercase_ascii_letters[letter]] = Letter.Letter("_")
 
-    def encode_letter(self, letter):
+    def _encode_letter(self, letter):
         return self.mixed_ascii[self.uppercase_ascii_letters.index(letter.upper())]
 
-    def decode_letter(self, letter):
+    def _decode_letter(self, letter):
         return self.uppercase_ascii_letters[self.mixed_ascii.index(letter.upper())]
 
     def encode_quote(self):
-        encoded_str = list(map(lambda s: self.encode_letter(s) if s.isalpha() else s, self.quote_chosen))
+        encoded_str = list(map(lambda s: self._encode_letter(s) if s.isalpha() else s, self.quote_chosen))
         self.encoded_quote = "".join(encoded_str)
 
-    def decode_quote(self, _encoded_quote):
-        decoded_str = list(map(lambda s: self.decode_letter(s) if s.isalpha() else s, _encoded_quote))
+    def _decode_quote(self, _encoded_quote):
+        decoded_str = list(map(lambda s: self._decode_letter(s) if s.isalpha() else s, _encoded_quote))
         return "".join(decoded_str)
 
     def initialize_quote_dictionaries(self):
@@ -60,49 +59,49 @@ class CryptogramGameLogic:
         for quote in range(len(self.quote_chosen)):
             self.decoded_quote_letters[quote] = Letter.Letter(self.quote_chosen[quote].upper())
 
-    def check_guess_length(self, guess):
+    def _check_guess_length(self, guess):
         if len(guess) > 3:
             raise Exceptions.EntryToLongException()
         elif len(guess) < 3:
             raise Exceptions.EntryTooShortException()
         return True
 
-    def check_guessed_quote(self):
+    def _check_guessed_quote(self):
         for i, v in self.guessed_quote_letters.items():
             if v.letter == "_":
                 return False
         return True
 
-    def check_first_letter(self, letter):
+    def _check_first_letter(self, letter):
         if not letter.isalpha():
             raise Exceptions.FirstLetterNotALetterException()
 
-    def check_white_space(self, white_space):
+    def _check_white_space(self, white_space):
         if white_space != " ":
-            raise Exceptions.NoSpaceInBetweenConversionException()
+            raise Exceptions.NoSpaceInBetweenLettersException()
 
-    def check_second_letter(self, letter):
+    def _check_second_letter(self, letter):
         if not letter.isalpha():
             raise Exceptions.SecondLetterNotALetterException()
 
-    def check_if_letter_is_in_quote(self, letter):
+    def _check_if_letter_is_in_quote(self, letter):
         guessed_letters = self.letter_objects_to_list_of_letters(self.encoded_quote_letters)
         if letter not in guessed_letters:
             raise Exceptions.EncodedLetterIsNotInQuoteException()
 
     def determine_guess(self, guess):
-        if self.check_guess_length(guess):
+        if self._check_guess_length(guess):
             first_letter = guess[:1].upper()
-            self.check_first_letter(first_letter)
+            self._check_first_letter(first_letter)
 
             space = guess[1:2]
-            self.check_white_space(space)
+            self._check_white_space(space)
 
             second_letter = guess[1:].strip().upper()
             if second_letter != "_":
-                self.check_second_letter(second_letter)
+                self._check_second_letter(second_letter)
 
-            self.check_if_letter_is_in_quote(first_letter)
+            self._check_if_letter_is_in_quote(first_letter)
             self.alphabet[first_letter].letter = second_letter
             self.guessed_letters.append(second_letter)
             self.update_quote(first_letter, second_letter)
@@ -119,9 +118,12 @@ class CryptogramGameLogic:
                 self.guessed_quote_letters[i].type = "hint"
 
     def can_receive_hint(self):
-        return self.number_of_hints == 0
+        if self.number_of_hints == 0:
+            self._receive_hint()
+        else:
+            raise Exceptions.SecondLetterNotALetterException()
 
-    def receive_hint(self):
+    def _receive_hint(self):
         self.number_of_hints += 1
         given_letter = ""
         for index, letter in self.decoded_quote_letters.items():
@@ -129,13 +131,13 @@ class CryptogramGameLogic:
                 if letter.letter not in self.guessed_letters:
                     given_letter = letter.letter.strip()
                     continue
-        self.update_quote(self.encode_letter(given_letter), given_letter, hint=True)
-        self.alphabet[self.encode_letter(given_letter)].letter = given_letter
+        self.update_quote(self._encode_letter(given_letter), given_letter, hint=True)
+        self.alphabet[self._encode_letter(given_letter)].letter = given_letter
 
-    def update_alphabet(self, letter):
+    def _update_alphabet(self, letter):
         self.alphabet[letter].letter = "_"
 
-    def update_guessed_letters(self, letter):
+    def _update_guessed_letters(self, letter):
         if letter in self.guessed_letters:
             self.guessed_letters.remove(letter)
 
@@ -148,6 +150,14 @@ class CryptogramGameLogic:
             if letter_to_remove.isalpha():
                 if letter_to_remove != self.decoded_quote_letters[index].letter:
                     self.set_letter_as_mistake(index)
+
+    def remove_all_mistakes(self):
+        for index in range(len(self.guessed_quote_letters)):
+            if self.guessed_quote_letters[index].type == "mistake":
+                self._update_alphabet(self.guessed_quote_letters[index].letter)
+                self._update_guessed_letters(self.guessed_quote_letters[index].letter)
+                self.guessed_quote_letters[index].letter = "_"
+                self.guessed_quote_letters[index].type = "guess"
 
     @staticmethod
     def letter_objects_to_list_of_letters(dictionary_of_letter_objects):

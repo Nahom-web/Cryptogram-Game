@@ -4,46 +4,9 @@
 # This file includes all of the exceptions used for the program
 
 
-class NoSpaceInBetweenConversionException(BaseException):
+class NoSpaceInBetweenLettersException(BaseException):
     def __init__(self):
         self.message = "Invalid entry, please leave a space between the two letters."
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f'{self.message}'
-
-
-class MoreThanTwoLettersException(BaseException):
-    def __init__(self):
-        self.message = "Invalid conversion, you can only enter in two letters. First the decoded letter, " \
-                       "then a space, then a letter to replace with. "
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f'{self.message}'
-
-
-class InvalidCharactersInConversionException(BaseException):
-    def __init__(self):
-        self.message = "Invalid characters, you cannot convert a letter to an invalid character. Please try again"
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f'{self.message}'
-
-
-class OneLetterWhenConvertingException(BaseException):
-    def __init__(self):
-        self.message = "Invalid conversion, you are not allowed to enter in one letter. Please try again"
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f'{self.message}'
-
-
-class NumbersInGuessException(BaseException):
-    def __init__(self):
-        self.message = "Invalid entry, you are not allowed to enter in numbers for your conversion. Please try again."
         super().__init__(self.message)
 
     def __str__(self):
@@ -53,24 +16,6 @@ class NumbersInGuessException(BaseException):
 class EmptyGuessException(BaseException):
     def __init__(self):
         self.message = "Invalid entry, you must enter in the decoded letter, a space, then the converted letter."
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f'{self.message}'
-
-
-class CannotConvertToNumberException(BaseException):
-    def __init__(self):
-        self.message = "Invalid conversion, you cannot convert a letter to a number. Please try again."
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f'{self.message}'
-
-
-class CannotConvertNumberToLetterException(BaseException):
-    def __init__(self):
-        self.message = "Invalid conversion, you convert a number to a letter. Please try again."
         super().__init__(self.message)
 
     def __str__(self):
@@ -116,15 +61,6 @@ class SecondLetterNotALetterException(BaseException):
 class CantReceiveHintException(BaseException):
     def __init__(self):
         self.message = "Sorry, you can only receive one hint."
-        super().__init__(self.message)
-
-    def __str__(self):
-        return f'{self.message}'
-
-
-class LetterHasAlreadyBeenGuessedException(BaseException):
-    def __init__(self):
-        self.message = "Sorry, you already used that letter to convert another encoded letter. Please try-again."
         super().__init__(self.message)
 
     def __str__(self):

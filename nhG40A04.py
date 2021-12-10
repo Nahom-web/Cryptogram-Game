@@ -59,10 +59,7 @@ def check_input(guess_input, game_obj):
         print("Finding all mistakes...")
         game_obj.find_all_mistakes()
     elif guess_input == "?":
-        if game_obj.can_receive_hint():
-            game_obj.receive_hint()
-        else:
-            raise Exceptions.CantReceiveHintException()
+        game_obj.can_receive_hint()
     elif guess_input == "stop":
         print('Thanks for playing!')
         exit(0)
@@ -86,12 +83,12 @@ def won(game_obj):
 
 def lost(game_obj):
     print('Sorry, you lost. Do you want to play a new game or find all the mistakes? Enter "play again" or "!" to '
-          'find all mistakes.')
+          'remove all mistakes.')
     answer = input(">>>")
     if answer.lower() == 'play again':
         get_random_quote()
     if answer == '!':
-        game_obj.find_all_mistakes()
+        game_obj.remove_all_mistakes()
         start_game(game_obj)
 
 
@@ -120,6 +117,7 @@ def set_up_game(_quote_chosen):
 
 def start_game(game_obj):
     print(game_obj.quote_chosen)
+    print(game_obj.__repr__())
     while not game_obj.is_game_over():
         try:
             print_alphabet(game_obj.alphabet)
@@ -129,6 +127,8 @@ def start_game(game_obj):
             check_input(guess, game_obj)
         except ValueError:
             print_error_message("Please enter a valid command")
+        except Exceptions.NoSpaceInBetweenLettersException as e:
+            print_error_message(e)
         except Exceptions.EmptyGuessException as e:
             print_error_message(e)
         except Exceptions.EntryToLongException as e:
@@ -137,17 +137,14 @@ def start_game(game_obj):
             print_error_message(e)
         except Exceptions.FirstLetterNotALetterException as e:
             print_error_message(e)
-        except Exceptions.NoSpaceInBetweenConversionException as e:
-            print_error_message(e)
         except Exceptions.SecondLetterNotALetterException as e:
             print_error_message(e)
         except Exceptions.CantReceiveHintException as e:
             print_error_message(e)
-        except Exceptions.LetterHasAlreadyBeenGuessedException as e:
-            print_error_message(e)
         except Exceptions.EncodedLetterIsNotInQuoteException as e:
             print_error_message(e)
     else:
+        game_obj.find_all_mistakes()
         display_quote(game_obj.encoded_quote_letters)
         display_guessed_quote(game_obj.guessed_quote_letters)
         game_over(game_obj)

@@ -17,7 +17,6 @@ class QuoteManager(HTMLParser):
         super().__init__()
         self.reset()
         self.is_quote = False
-        self.is_br = False
         self.check_quote_end_tag = False
         self.stripped_quotes = list()
         self.quotes = {}
@@ -48,10 +47,10 @@ class QuoteManager(HTMLParser):
 
     def create_quotes_dictionary(self):
         for index in range(len(self.stripped_quotes)):
-            quote = Quote.Quote(self.remove_number_from_quote(self.stripped_quotes[index]))
+            quote = Quote.Quote(self._remove_number_from_quote(self.stripped_quotes[index]))
             self.quotes[index] = quote
 
-    def remove_number_from_quote(self, quote):
+    def _remove_number_from_quote(self, quote):
         start_point = [q for q in range(len(quote)) if quote[q].isalpha()][0]
         return quote[start_point:]
 
