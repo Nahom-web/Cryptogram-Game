@@ -131,7 +131,7 @@ class CryptogramGameLogic:
             if letter.letter.isalpha():
                 if letter.letter not in self.guessed_letters:
                     given_letter = letter.letter.strip()
-                    continue
+                    break
         self.update_quote(self._encode_letter(given_letter), given_letter, hint=True)
         self.alphabet[self._encode_letter(given_letter)].letter = given_letter
 
@@ -186,8 +186,7 @@ class CryptogramGameLogic:
     def calculate_time(self):
         self.end_time = time.time()
         total_time = self.end_time - self.start_time
-        ty_res = time.gmtime(total_time)
-        return time.strftime("%M:%S", ty_res)
+        return time.strftime("%M:%S", time.gmtime(total_time))
 
     def display_alphabet(self, quote):
         output = ""
