@@ -85,7 +85,6 @@ def set_up_game(_quote_chosen):
 
 
 def start_game(game_obj):
-    print(game_obj.quote_chosen)
     while not game_obj.is_game_over():
         try:
             print(game_obj.__str__())

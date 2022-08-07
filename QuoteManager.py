@@ -56,5 +56,4 @@ class QuoteManager(HTMLParser):
 
     def random_quote(self):
         randomized_quote = random.choice(list(self.quotes.items()))
-        # return randomized_quote[1]
-        return self.quotes[0]
+        return randomized_quote[1]
